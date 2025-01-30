@@ -24,14 +24,14 @@ resource "google_artifact_registry_repository" "website-tools" {
   format        = "DOCKER"
 }
 resource "google_sql_database" "wordpres" {
-  name     = "wordpres"
+  name     = var.db_name
   instance = "main-instance"
 }
 
 resource "google_sql_user" "wordpress" {
-   name     = "wordpress"
+   name     = var.db_user
    instance = "main-instance"
-   password = "ilovedevops"
+   password = var.db_password
 }
 resource "google_cloud_run_service" "wordpress-service" {
   name     = "wordpress-service"
@@ -102,6 +102,11 @@ resource "kubernetes_deployment" "wordpress" {
             name  = "WORDPRESS_DB_HOST"
             value = "34.58.250.187"
           }
+    #      env_from {
+    #       secret_ref {
+    #          name = kubernetes_secret.mysql_credentials.metadata[0].name
+    #        }
+    #      }
           env {
             name  = "WORDPRESS_DB_USER"
             value = "wordpress"
@@ -117,6 +122,16 @@ resource "kubernetes_deployment" "wordpress" {
         }
       }
     }
+  }
+}
+
+resource "kubernetes_secret" "mysql_credentials" {
+  metadata {
+    name      = "mysql-credentials"
+  }
+  type = "Opaque"
+  data = {
+     WORDPRESS_DB_PASSWORD = base64encode(var.db_password)    
   }
 }
 

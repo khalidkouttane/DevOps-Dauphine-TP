@@ -1,0 +1,29 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: 'hashicorp/terraform:1.0.0'
+    id: 'Terraform Init'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "Initializing Terraform..."
+        terraform init
+
+  - name: 'hashicorp/terraform:1.0.0'
+    id: 'Terraform Plan'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "Creating tfplan..."
+        terraform plan -out=tfplan
+  - name: 'hashicorp/terraform:1.0.0'
+    id: 'Terraform Apply'
+    entrypoint: 'sh'
+    args:
+      - '-c'
+      - |
+        echo "Applying Terraform configuration..."
+        terraform apply --auto-approve tfplan
