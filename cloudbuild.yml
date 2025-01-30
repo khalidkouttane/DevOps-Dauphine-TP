@@ -1,0 +1,21 @@
+options:
+  logging: CLOUD_LOGGING_ONLY
+
+steps:
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Docker Image'
+    args:
+      - 'build'
+      - '-t'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/websit-tools/custom-wordpress:${_IMAGE_TAG}'
+      - '.'
+
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push Docker Image'
+    args:
+      - 'push'
+      - 'us-central1-docker.pkg.dev/$PROJECT_ID/websit-tools/custom-wordpress:${_IMAGE_TAG}'
+images:
+  - 'us-central1-docker.pkg.dev/$PROJECT_ID/websit-tools/custom-wordpress:${_IMAGE_TAG}'
+substitutions:
+    _IMAGE_TAG: '1.0'
